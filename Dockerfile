@@ -23,19 +23,18 @@ RUN npm ci
 COPY . .
 
 # Replace localhost with 0.0.0.0 (Linux compatible version)
+# Find and patch workerd files to use 0.0.0.0 instead of localhost
 RUN set -e && \
-    WORKERD_FILE=$(find node_modules/@shopify/cli/dist -type f -name "workerd-*.js") && \
-    if [ -f "$WORKERD_FILE" ]; then \
-        sed -i -e 's|host: "localhost"|host: "0.0.0.0"|' "$WORKERD_FILE"; \
-    else \
-        echo "workerd file not found" && exit 1; \
-    fi && \
-    HYDROGEN_WORKERD_FILE="node_modules/@shopify/cli-hydrogen/dist/lib/mini-oxygen/workerd.js" && \
-    if [ -f "$HYDROGEN_WORKERD_FILE" ]; then \
-        sed -i -e 's|host: "localhost"|host: "0.0.0.0"|' "$HYDROGEN_WORKERD_FILE"; \
-    else \
-        echo "hydrogen workerd file not found" && exit 1; \
-    fi
+    # Find all workerd files in the @shopify directories and replace localhost with 0.0.0.0
+    find node_modules/@shopify -type f -name "workerd*.js" -o -name "*oxygen*.js" | xargs grep -l "host: \"localhost\"" | \
+    xargs -r sed -i -e 's|host: "localhost"|host: "0.0.0.0"|g' || \
+    echo "No workerd files with localhost found to patch"
+    
+    # Check if we have mini-oxygen or hydrogen binaries that need to be patched
+RUN find node_modules/@shopify -type f -name "mini-oxygen.js" -o -name "mini-oxygen-worker.js" -o -name "hydrogen-*.js" | \
+    xargs -r grep -l "host: \"localhost\"" | \
+    xargs -r sed -i -e 's|host: "localhost"|host: "0.0.0.0"|g' || \
+    echo "No mini-oxygen files with localhost found to patch"
 
 # Build the app
 RUN npm run build
