@@ -66,12 +66,12 @@
     "typographic-base": "1.0.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.0.0-beta.6",
+    "@biomejs/biome": "2.0.6",
     "@flydotio/dockerfile": "^0.7.10",
-    "@playwright/test": "1.52.0",
-    "@react-router/dev": "^7.6.1",
-    "@react-router/fs-routes": "^7.6.1",
-    "@shopify/cli": "3.80.7",
+    "@playwright/test": "1.53.1",
+    "@react-router/dev": "^7.6.3",
+    "@react-router/fs-routes": "^7.6.3",
+    "@shopify/cli": "3.81.2",
     "@shopify/hydrogen-codegen": "0.3.3",
     "@shopify/mini-oxygen": "3.2.1",
     "@shopify/oxygen-workers-types": "4.1.10",
