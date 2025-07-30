@@ -82,7 +82,7 @@ let HighlightsBadge = forwardRef<HTMLDivElement, HighlightsBadgeProps & Hydrogen
             );
           }
           return (
-            <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center">
+            <div className="badge w-12 h-12 flex-shrink-0 flex items-center justify-center">
               <img 
                 src={customIcon}
                 alt="Custom Icon"
