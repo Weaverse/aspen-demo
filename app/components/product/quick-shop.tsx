@@ -98,18 +98,35 @@ function ProductDescriptionDrawer({
   onCloseAll?: () => void;
 }) {
   const { product } = data;
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setIsAnimating(false);
+      onOpenChange(true);
+    } else {
+      setIsAnimating(true);
+      setTimeout(() => {
+        onOpenChange(false);
+        setIsAnimating(false);
+      }, 300);
+    }
+  };
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root open={open} onOpenChange={handleOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay
-          className="fixed inset-0 z-20 bg-black/50 data-[state=open]:animate-fade-in"
-          style={{ "--fade-in-duration": "150ms" } as React.CSSProperties}
+          className={clsx(
+            "fixed inset-0 z-20 bg-black/50 transition-opacity duration-300",
+            open && !isAnimating ? "opacity-100" : "opacity-0",
+          )}
         />
         <Dialog.Content
           className={clsx([
-            "fixed inset-y-0 z-20 w-full bg-background py-2.5 md:max-w-[430px]",
-            "right-0 shadow-2xl data-[state=open]:animate-enter-from-right",
+            "fixed inset-y-0 right-0 z-20 w-full bg-background py-2.5 md:max-w-[430px]",
+            "shadow-2xl transition-transform duration-300 ease-in-out",
+            open && !isAnimating ? "translate-x-0" : "translate-x-full",
           ])}
           aria-describedby={undefined}
         >
@@ -197,6 +214,11 @@ export function QuickShop({
     unavailableText,
     showCompareAtPrice,
     hideUnavailableOptions,
+    quickShopNavigationStyle,
+    quickShopArrowsColor,
+    quickShopArrowsShape,
+    quickShopZoomColor,
+    quickShopZoomShape,
   } = themeSettings;
 
   const { title } = product;
@@ -210,10 +232,10 @@ export function QuickShop({
     <>
       <div
         className="space-y-6"
-        style={{ "--shop-pay-button-height": "48px" } as React.CSSProperties}
+        style={{ "--shop-pay-button-height": "54px" } as React.CSSProperties}
       >
         {/* Product Image */}
-        <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
+        <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
           <div className="[&_.swiper]:!h-full [&_.swiper-slide]:!h-full [&_.swiper-wrapper]:!h-full absolute inset-0">
             <ProductMedia
               mediaLayout="slider"
@@ -222,6 +244,11 @@ export function QuickShop({
               showThumbnails={false}
               imageAspectRatio={"1/1"}
               enableZoom={enableZoom}
+              navigationStyle={quickShopNavigationStyle}
+              arrowsColor={quickShopArrowsColor}
+              arrowsShape={quickShopArrowsShape}
+              zoomColor={quickShopZoomColor}
+              zoomShape={quickShopZoomShape}
             />
           </div>
         </div>
@@ -270,7 +297,7 @@ export function QuickShop({
                 },
               ]}
               data-test="add-to-cart"
-              className="h-12 w-full"
+              className="h-[54px] w-full"
             >
               {atcText}
             </AddToCartButton>
@@ -284,7 +311,7 @@ export function QuickShop({
                     quantity,
                   },
                 ]}
-                className="h-12 w-full"
+                className="h-[54px] w-full"
                 storeDomain={storeDomain}
               />
             )}
@@ -320,6 +347,7 @@ export function QuickShopTrigger({
 }) {
   const { quickShopButtonTextOpen } = useThemeSettings();
   const [open, setOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const [showDescription, setShowDescription] = useState(false);
   const { load, data, state } = useFetcher<ProductData>();
   const apiPath = usePrefixPathWithLocale(
@@ -343,9 +371,16 @@ export function QuickShopTrigger({
       open={open}
       onOpenChange={(isOpen) => {
         if (isOpen) {
-          setOpen(isOpen);
+          setIsAnimating(false);
+          setOpen(true);
         } else {
-          closeAllDrawers();
+          setIsAnimating(true);
+          // Close description first
+          setShowDescription(false);
+          setTimeout(() => {
+            setOpen(false);
+            setIsAnimating(false);
+          }, 300);
         }
       }}
     >
@@ -359,7 +394,7 @@ export function QuickShopTrigger({
             "flex items-center justify-center p-0",
             // Desktop: Hide initially, show on hover with text
             showOnHover
-              ? "lg:inset-x-4 lg:h-auto lg:w-auto lg:rounded-none lg:opacity-0"
+              ? "p-4 lg:inset-x-4 lg:h-auto lg:w-auto lg:rounded-none lg:opacity-0"
               : "lg:inset-x-4 lg:h-auto lg:w-auto lg:rounded-none lg:opacity-100",
             "lg:px-6 lg:py-5",
             "lg:border-(--btn-secondary-bg) lg:bg-(--btn-secondary-bg) lg:text-(--btn-secondary-text)",
@@ -391,13 +426,17 @@ export function QuickShopTrigger({
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay
-          className="fixed inset-0 z-10 bg-black/50 data-[state=open]:animate-fade-in"
-          style={{ "--fade-in-duration": "150ms" } as React.CSSProperties}
+          className={clsx(
+            "fixed inset-0 z-10 bg-black/50 transition-opacity duration-300",
+            open && !isAnimating ? "opacity-100" : "opacity-0",
+          )}
         />
         <Dialog.Content
           className={clsx([
-            "fixed inset-y-0 z-10 w-full bg-background py-2.5 md:max-w-[430px]",
-            "right-0 shadow-2xl data-[state=open]:animate-enter-from-right",
+            "fixed inset-y-0 right-0 z-10 w-full bg-background py-2.5 md:max-w-[430px]",
+            "shadow-2xl transition-transform duration-300 ease-in-out",
+            "data-[state=open]:animate-enter-from-right",
+            open && !isAnimating ? "translate-x-0" : "translate-x-full",
           ])}
           aria-describedby={undefined}
         >
@@ -422,8 +461,8 @@ export function QuickShopTrigger({
                 {state === "loading" ? (
                   <div className="space-y-6">
                     {/* Image skeleton */}
-                    <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-gray-100">
-                      <Skeleton className="h-full w-full rounded-lg" />
+                    <div className="relative aspect-square w-full overflow-hidden bg-gray-100">
+                      <Skeleton className="h-full w-full" />
                     </div>
 
                     {/* Content skeleton */}

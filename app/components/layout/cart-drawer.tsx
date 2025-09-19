@@ -14,7 +14,28 @@ export function CartDrawer() {
   const rootData = useRouteLoaderData<RootLoader>("root");
   const { publish } = useAnalytics();
   const [open, setOpen] = useState(false);
-  toggleCartDrawer = setOpen;
+  const [isAnimating, setIsAnimating] = useState(false);
+  
+  const toggleCart = (newOpen: boolean) => {
+    if (newOpen) {
+      setOpen(true);
+      setIsAnimating(false);
+    } else {
+      // Bắt đầu animation đóng
+      setIsAnimating(true);
+      // Delay để animation hoàn thành trước khi đóng
+      setTimeout(() => {
+        setOpen(false);
+        setIsAnimating(false);
+      }, 300);
+    }
+  };
+  
+  toggleCartDrawer = toggleCart;
+
+  const handleOpenChange = (newOpen: boolean) => {
+    toggleCart(newOpen);
+  };
 
   return (
     <Suspense
@@ -29,7 +50,7 @@ export function CartDrawer() {
     >
       <Await resolve={rootData?.cart}>
         {(cart) => (
-          <Dialog.Root open={open} onOpenChange={setOpen}>
+          <Dialog.Root open={open} onOpenChange={handleOpenChange}>
             <Dialog.Trigger
               onClick={() => publish("custom_sidecart_viewed", { cart })}
               className="relative flex h-8 w-8 items-center justify-center focus:ring-border"
@@ -38,28 +59,31 @@ export function CartDrawer() {
               {cart?.totalQuantity > 0 && (
                 <div
                   className={clsx(
-                    // "cart-count",
-                    "-right-1.5 absolute top-0",
-                    "flex h-4.5 min-w-4.5 items-center justify-center rounded-full px-1 text-center",
-                    "text-center font-normal text-[12px] leading-none",
-                    "transition-colors duration-300",
-                    // "group-hover/header:bg-(--color-header-text)",
-                    // "group-hover/header:text-(--color-header-bg)"
+                    "-right-2 -top-1 absolute",
+                    "flex h-5 min-w-5 items-center justify-center",
+                    "font-medium text-[11px] leading-none",
+                    "px-1 py-0.5",
                   )}
                 >
-                  <span className="-mr-px">{cart?.totalQuantity}</span>
+                  <span>{cart?.totalQuantity}</span>
                 </div>
               )}
             </Dialog.Trigger>
             <Dialog.Portal>
               <Dialog.Overlay
-                className="fixed inset-0 z-10 bg-black/50 data-[state=open]:animate-fade-in"
-                style={{ "--fade-in-duration": "100ms" } as React.CSSProperties}
+                className={clsx(
+                  "fixed inset-0 z-10 bg-black/50 transition-opacity duration-300",
+                  open && !isAnimating ? "opacity-100" : "opacity-0"
+                )}
               />
               <Dialog.Content
                 className={clsx([
                   "fixed inset-y-0 right-0 z-10 w-screen max-w-[430px] bg-background py-4",
+                  "transition-transform duration-300 ease-in-out",
                   "data-[state=open]:animate-enter-from-right",
+                  open && !isAnimating 
+                    ? "translate-x-0" 
+                    : "translate-x-full",
                 ])}
                 aria-describedby={undefined}
               >
