@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "aspen",
+  "main": "./server.ts",
+  "compatibility_date": "2025-11-26",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  "upload_source_maps": true,
+  "vars": {
+    "NODE_ENV": "production",
+    "WEAVERSE_HOST": "https://studio.weaverse.io",
+    "SESSION_SECRET": "foobar",
+    "JUDGEME_PUBLIC_TOKEN": "your-judgeme-public-token",
+    "JUDGEME_PRIVATE_API_TOKEN": "your-judgeme-private-api-token",
+    "KLAVIYO_PRIVATE_API_TOKEN": "your-klaviyo-private-api-token",
+    "STORE_EMAIL": "your-store-email@domain.com",
+    "WEAVERSE_PROJECT_ID": "p4ysmdn6qlw2zphufd3g6cdf",
+    "PUBLIC_STOREFRONT_API_TOKEN": "b4a764390e6efa3a572b3596cf6e9709",
+    "PUBLIC_STORE_DOMAIN": "weaverse-aspen-plus.myshopify.com",
+    "PUBLIC_CUSTOMER_ACCOUNT_API_CLIENT_ID": "8439105f-603c-416e-b5fb-770af41029e1",
+    "SHOP_ID": "96916504944",
+    "PUBLIC_CUSTOMER_ACCOUNT_API_URL": "https://shopify.com/96916504944"
+  }
+}
